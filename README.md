@@ -1,3 +1,2 @@
 # HW3
-dor
-benfica é merda
+viva o porto
