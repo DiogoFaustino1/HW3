@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun  1 18:31:22 2023
+Assignment 3 - Problem 3 b) i) 
 
-@author: filip
-
-Example from
-https://mdolab-openaerostruct.readthedocs-hosted.com/en/latest/aero_walkthrough.html
+ ========================================================================
+   Instituto Superior Técnico - Aircraft Optimal Design - 2023
+   96375 Filipe Valquaresma
+   filipevalquaresma@tecnico.ulisboa.pt
+   95782 Diogo Faustino
+   diogovicentefaustino@tecnico.ulisboa.pt
+ ========================================================================
 """
+
 import numpy as np
 
 import openmdao.api as om
@@ -18,12 +22,12 @@ from openaerostruct.aerodynamics.aero_groups import AeroPoint
 # Create a dictionary to store options about the mesh
 mesh_dict = {"num_y" : 7, # spanwise
              "num_x" : 2, # chordwise
-             "wing_type" : "CRM",
-             "symmetry" : True,  # computes left half-wing only
-             "num_twist_cp" : 5} # 
+             "wing_type" : "rect",
+             "symmetry" : True}  # computes left half-wing only
+             #"num_twist_cp" : 5} # 
 
 # Generate the aerodynamic mesh based on the previous dictionary
-mesh, twist_cp = generate_mesh(mesh_dict)
+mesh = generate_mesh(mesh_dict)
 
 # Create a dictionary with info and options about the aerodynamic
 # lifting surface
@@ -37,7 +41,7 @@ surface = {
            "span" : 11.0,
            "root_chord" : (16.2/11.0),
            "fem_model_type" : "tube",
-           "twist_cp" : twist_cp,
+           # "twist_cp" : twist_cp,
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
