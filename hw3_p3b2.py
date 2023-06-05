@@ -14,12 +14,11 @@ from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
-mesh_dict = {"num_y" : 7, # spanwise
-             "span_cos_spacing" : 0.5,
+mesh_dict = {"num_y" : 11, # spanwise
              "num_x" : 2, # chordwise
              "wing_type" : "rect",
              "symmetry" : True,  # computes left half-wing only
-             "num_twist_cp" : 5
+             "num_twist_cp" : 10
              } 
 
 # Generate the aerodynamic mesh based on the previous dictionary
@@ -39,7 +38,7 @@ surface = {
            "fem_model_type" : "tube",
            #"sweep" : 0,
            #"taper" : 1,
-           "twist_cp" : [0,0,0,0,0],
+           "twist_cp" : [0,0,0,0,0,0,0,0,0,0],
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -86,7 +85,7 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 prob.model.add_subsystem(point_name, aero_group,
-                         promotes_inputs=["v", "alpha", "Mach_number", "re",
+                         promotes_inputs=["v", "alpha", #"Mach_number", "re",
                                           "rho", "cg"]
 )
 

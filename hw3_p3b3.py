@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Assignment 3 - Problem 3 b) i) 
+Created on Mon Jun  5 22:47:56 2023
 
- ========================================================================
-   Instituto Superior Técnico - Aircraft Optimal Design - 2023
-   
-   96375 Filipe Valquaresma
-   filipevalquaresma@tecnico.ulisboa.pt
-   
-   95782 Diogo Faustino
-   diogovicentefaustino@tecnico.ulisboa.pt
- ========================================================================
+@author: filip
 """
 
 import numpy as np
@@ -22,11 +14,12 @@ from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
-mesh_dict = {"num_y" : 7, # spanwise
+mesh_dict = {"num_y" : 11, # spanwise
              "num_x" : 2, # chordwise
              "wing_type" : "rect",
-             "symmetry" : True}  # computes left half-wing only
-             #"num_twist_cp" : 5} # 
+             "symmetry" : True,  # computes left half-wing only
+             "num_chord_cp" : 5
+             } 
 
 # Generate the aerodynamic mesh based on the previous dictionary
 mesh = generate_mesh(mesh_dict)
@@ -43,7 +36,9 @@ surface = {
            "span" : 11.0,
            "root_chord" : (16.2/11.0),
            "fem_model_type" : "tube",
-           # "twist_cp" : twist_cp,
+           #"sweep" : 0,
+           #"taper" : 1,
+           "chord_cp" : [1,1,1,1,1],
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -73,7 +68,7 @@ indep_var_comp = om.IndepVarComp()
 indep_var_comp.add_output("v", val=63, units="m/s")
 indep_var_comp.add_output("alpha", val=5.0, units="deg")
 # indep_var_comp.add_output("Mach_number", val=0.84)
-indep_var_comp.add_output("re", val=1.0e6, units="1/m")
+# indep_var_comp.add_output("re", val=1.0e6, units="1/m")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3") # https://aerotoolbox.com/atmcalc/ assuming T_offset = 0
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
 
@@ -90,7 +85,8 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 prob.model.add_subsystem(point_name, aero_group,
-                         promotes_inputs=["v", "alpha", "Mach_number", "re", "rho", "cg"]
+                         promotes_inputs=["v", "alpha", #"Mach_number", "re",
+                                          "rho", "cg"]
 )
 
 name = surface["name"]
@@ -115,6 +111,7 @@ prob.driver.recording_options['record_derivatives'] = True
 prob.driver.recording_options['includes'] = ['*']
 
 # Setup problem and add design variables, constraint, and objective
+prob.model.add_design_var("wing.chord_cp", lower=-50.0, upper=50.0)
 prob.model.add_design_var("alpha", lower=-50.0, upper=50.0)
 prob.model.add_constraint(point_name + ".wing_perf.CL", equals=0.5)
 prob.model.add_objective(point_name + ".wing_perf.CD", scaler=1e4)
@@ -130,6 +127,7 @@ prob.setup()
 prob.run_driver()
 
 # Output some results
+# print("Twist Distrbution =", prob['wing.twist_cp'][0])
 print("alpha =", prob['aero_point_0.alpha'][0])
 print("C_D =", prob['aero_point_0.wing_perf.CD'][0])
 print("C_L =", prob['aero_point_0.wing_perf.CL'][0])
@@ -137,6 +135,3 @@ print("CM position =", prob['aero_point_0.CM'][1])
 
 # Clean up
 prob.cleanup()
-
-# grid convergence analysis, plot cd and cl for some values of cl and cd and check convergence
-# when results begin to be independent of mesh and number of panels
