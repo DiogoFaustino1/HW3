@@ -15,13 +15,15 @@ from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
 mesh_dict = {"num_y" : 7, # spanwise
+             "span_cos_spacing" : 0.5,
              "num_x" : 2, # chordwise
-             "wing_type" : "CRM",
+             "wing_type" : "rect",
              "symmetry" : True,  # computes left half-wing only
-             "num_twist_cp" : 5} # 
+             "num_twist_cp" : 5
+             } 
 
 # Generate the aerodynamic mesh based on the previous dictionary
-mesh, twist_cp = generate_mesh(mesh_dict)
+mesh = generate_mesh(mesh_dict)
 
 # Create a dictionary with info and options about the aerodynamic
 # lifting surface
@@ -35,7 +37,9 @@ surface = {
            "span" : 11.0,
            "root_chord" : (16.2/11.0),
            "fem_model_type" : "tube",
-           "twist_cp" : twist_cp,
+           #"sweep" : 0,
+           #"taper" : 1,
+           "twist_cp" : [0,0,0,0,0],
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -65,7 +69,7 @@ indep_var_comp = om.IndepVarComp()
 indep_var_comp.add_output("v", val=63, units="m/s")
 indep_var_comp.add_output("alpha", val=5.0, units="deg")
 # indep_var_comp.add_output("Mach_number", val=0.84)
-indep_var_comp.add_output("re", val=1.0e6, units="1/m")
+# indep_var_comp.add_output("re", val=1.0e6, units="1/m")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3") # https://aerotoolbox.com/atmcalc/ assuming T_offset = 0
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
 
