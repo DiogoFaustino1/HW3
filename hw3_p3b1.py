@@ -26,7 +26,7 @@ mesh_dict = {"num_y" : 7, # spanwise
              "num_x" : 2, # chordwise
              "wing_type" : "rect",
              "symmetry" : True}  # computes left half-wing only
-             #"num_twist_cp" : 5} # 
+             
 
 # Generate the aerodynamic mesh based on the previous dictionary
 mesh = generate_mesh(mesh_dict)
@@ -73,7 +73,7 @@ indep_var_comp = om.IndepVarComp()
 indep_var_comp.add_output("v", val=63, units="m/s")
 indep_var_comp.add_output("alpha", val=5.0, units="deg")
 # indep_var_comp.add_output("Mach_number", val=0.84)
-indep_var_comp.add_output("re", val=1.0e6, units="1/m")
+# indep_var_comp.add_output("re", val=1.0e6, units="1/m")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3") # https://aerotoolbox.com/atmcalc/ assuming T_offset = 0
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
 
@@ -90,7 +90,7 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 prob.model.add_subsystem(point_name, aero_group,
-                         promotes_inputs=["v", "alpha", "Mach_number", "re", "rho", "cg"]
+                         promotes_inputs=["v", "alpha", "rho", "cg"]
 )
 
 name = surface["name"]

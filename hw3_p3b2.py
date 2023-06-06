@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun  3 16:30:21 2023
+Assignment 3 - Problem 3 b) i) 
 
-@author: filip
+ ========================================================================
+   Instituto Superior Técnico - Aircraft Optimal Design - 2023
+   
+   96375 Filipe Valquaresma
+   filipevalquaresma@tecnico.ulisboa.pt
+   
+   95782 Diogo Faustino
+   diogovicentefaustino@tecnico.ulisboa.pt
+ ========================================================================
 """
 
 import numpy as np
@@ -85,8 +93,7 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 prob.model.add_subsystem(point_name, aero_group,
-                         promotes_inputs=["v", "alpha", #"Mach_number", "re",
-                                          "rho", "cg"]
+                         promotes_inputs=["v", "alpha", "rho", "cg"]
 )
 
 name = surface["name"]
