@@ -111,8 +111,8 @@ prob_1.model.add_subsystem('const_1', constraint(), promotes_inputs=['x', 'y'])
 
 # Design variables 'x' and 'y' span components, so we need to provide a common initial
 # value for them.
-prob_1.model.set_input_defaults('x', -1.2)
-prob_1.model.set_input_defaults('y', 1.0)
+prob_1.model.set_input_defaults('x', 0.99962936)
+prob_1.model.set_input_defaults('y', 0.99925735)
 
 # setup the optimization
 prob_1.driver = om.ScipyOptimizeDriver()

@@ -79,34 +79,43 @@ prob.model.add_subsystem(surface["name"], geom_group)
 # Create the aero point group, which contains the actual aerodynamic analyses
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
+name = surface["name"]
 prob.model.add_subsystem(point_name, aero_group, promotes_inputs=["v", "alpha", "rho", "cg"])
 
 # Connect the mesh from the geometry component to the analysis point
-prob.model.connect("wing.mesh", "aero_point_0.wing_def.mesh")
+prob.model.connect(name + ".mesh", point_name + "." + name + ".def_mesh")
 
 # Perform the connections with the modified names within the 'aero_states' group
-prob.model.connect("wing.mesh", "aero_point_0.aero_states.wing_def_mesh")
+prob.model.connect(name + ".mesh", point_name + ".aero_states." + name + "_def_mesh")
 
 # Add the SweepTimesSpan constraint component to the problem model
-prob.model.add_subsystem("sweep_constraint", SweepTimesSpan(surface["name"]=surface))
+prob.model.add_subsystem("sweep_constraint", SweepTimesSpan(), promotes_inputs=["sweep", "span"], promotes_outputs=["sweep_times_span"])
 
 # Connect the necessary variables to the SweepTimesSpan component
-prob.model.connect("wing.mesh", "sweep_constraint.mesh")
-prob.model.connect("wing.sweep", "sweep_constraint.sweep")
-prob.model.connect("wing.span", "sweep_constraint.span")
+
+#prob.model.connect("wing.mesh", "sweep_constraint.mesh")
+#prob.model.connect("wing.sweep", "sweep_constraint.sweep")
+#prob.model.connect("wing.span", "sweep_constraint.span")
 
 # Add the SweepTimesSpan constraint to the problem
-prob.model.add_constraint("sweep_constraint.constraint", lower=0, upper=15)
+prob.model.add_constraint("sweep_times_span", lower=0, upper=12)
 
 # Add the design variables, constraint, and objective to the problem
 prob.model.add_design_var("alpha", lower=-50.0, upper=50.0)
 prob.model.add_design_var("wing.sweep", lower=0, upper=15)
+prob.model.add_design_var("wing.span", lower=0.1, upper=20)
 prob.model.add_constraint("aero_point_0.wing_perf.CL", equals=0.5)
 prob.model.add_objective("aero_point_0.wing_perf.CD", scaler=1e4)
 
 # Set up the optimization problem
 prob.driver = om.ScipyOptimizeDriver()
 prob.driver.options["tol"] = 1e-9
+
+recorder = om.SqliteRecorder("aero.db")
+prob.driver.add_recorder(recorder)
+prob.driver.recording_options['record_derivatives'] = True
+prob.driver.recording_options['includes'] = ['*']
+
 prob.setup()
 
 # Run the optimization
@@ -115,6 +124,7 @@ prob.run_driver()
 # Output the results
 print("alpha =", prob["alpha"])
 print("sweep =", prob["wing.sweep"])
+print("span =", prob["wing.span"])
 print("C_D =", prob["aero_point_0.wing_perf.CD"])
 print("C_L =", prob["aero_point_0.wing_perf.CL"])
 print("CM position =", prob["aero_point_0.CM"][1])

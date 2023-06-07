@@ -49,7 +49,7 @@ surface = {
            #"taper" : 1,
            "twist_cp" : np.zeros(10),
            "mesh" : mesh,
-           
+           #"dor" : 0,
            # Aerodynamic performance of the lifting surface at
            # an angle of attack of 0 (alpha=0).
            # These CL0 and CD0 values are added to the CL and CD

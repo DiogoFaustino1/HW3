@@ -13,7 +13,7 @@ derivative_y = f.diff(y)
 
 print('f\' wrt x =', derivative_x, '\nf\' wrt y =', derivative_y)
 
-class Paraboloid(om.ExplicitComponent):
+class Rosenbrock(om.ExplicitComponent):
     def setup(self):
         self.add_input('x', val=0.0)
         self.add_input('y', val=0.0)
@@ -22,7 +22,7 @@ class Paraboloid(om.ExplicitComponent):
 
     def setup_partials(self):
         # Finite difference all partials.
-        self.declare_partials('*', '*', method='fd', form='backward', step=1e-3)
+        self.declare_partials('*', '*', method='fd', form='backward', step=1e-6, step_calc='abs', minimum_step=1e-6)
 
     def compute(self, inputs, outputs):
         x = inputs['x']
@@ -30,7 +30,7 @@ class Paraboloid(om.ExplicitComponent):
 
         outputs['f_xy'] = (1 - x)**2 + 100*(y - x**2)**2
 
-class Paraboloid_2(om.ExplicitComponent):
+class Rosenbrock_2(om.ExplicitComponent):
     def setup(self):
         self.add_input('x', val=0.0)
         self.add_input('y', val=0.0)
@@ -48,13 +48,13 @@ class Paraboloid_2(om.ExplicitComponent):
         outputs['f_xy'] = (1 - x)**2 + 100*(y - x**2)**2
 
 
-methods = [('*compute*', (Paraboloid,Paraboloid_2))]
-tool.setup(methods=methods)
-tool.start()
+#methods = [('*compute*', (Rosenbrock,Rosenbrock_2))]
+#tool.setup(methods=methods)
+#tool.start()
 
 # build the model
 prob = om.Problem()
-prob.model.add_subsystem('parab', Paraboloid(), promotes_inputs=['x', 'y'])
+prob.model.add_subsystem('rosen', Rosenbrock(), promotes_inputs=['x', 'y'])
 
 # define the component whose output will be constrained
 prob.model.add_subsystem('const', om.ExecComp('g = x + y'), promotes_inputs=['x', 'y'])
@@ -70,7 +70,7 @@ prob.driver.options['optimizer'] = 'SLSQP'
 
 prob.model.add_design_var('x', lower=-2, upper=2)
 prob.model.add_design_var('y', lower=-2, upper=2)
-prob.model.add_objective('parab.f_xy')
+prob.model.add_objective('rosen.f_xy')
 
 
 prob.setup()
@@ -78,7 +78,7 @@ prob.run_driver();
 
 # minimum value
 print("Unconstrained optimization results:")
-print("Function value", prob.get_val('parab.f_xy'))
+print("Function value", prob.get_val('rosen.f_xy'))
 # location of the minimum
 x_opt=prob.get_val('x')
 y_opt=prob.get_val('y')
@@ -90,7 +90,7 @@ print("\n\n\n\n\n\n")
 
 # build the model
 prob_1 = om.Problem()
-prob_1.model.add_subsystem('parab', Paraboloid_2(), promotes_inputs=['x', 'y'])
+prob_1.model.add_subsystem('rosen', Rosenbrock_2(), promotes_inputs=['x', 'y'])
 
 # define the component whose output will be constrained
 prob_1.model.add_subsystem('const', om.ExecComp('g = x + y'), promotes_inputs=['x', 'y'])
@@ -101,7 +101,7 @@ prob_1.driver.options['optimizer'] = 'SLSQP'
 
 prob_1.model.add_design_var('x', lower=-2, upper=2)
 prob_1.model.add_design_var('y', lower=-2, upper=2)
-prob_1.model.add_objective('parab.f_xy')
+prob_1.model.add_objective('rosen.f_xy')
 
 
 prob_1.model.set_input_defaults('x', x_opt)
@@ -114,7 +114,7 @@ prob_1.run_driver();
 
 # minimum value
 print("Constrained optimization results starting from the unconstrained optimal solution:")
-print("Function value", prob_1.get_val('parab.f_xy'))
+print("Function value", prob_1.get_val('rosen.f_xy'))
 # location of the minimum
 print("X value", prob_1.get_val('x'), "," , "Y value", prob_1.get_val('y'), "," , "Constraint value", prob_1.get_val('x')+prob_1.get_val('y'))
-tool.stop()
+#tool.stop()

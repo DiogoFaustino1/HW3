@@ -40,9 +40,7 @@ class SweepTimesSpan(om.ExplicitComponent):
 
         self.declare_partials("sweep_times_span", "sweep")
         self.declare_partials("sweep_times_span", "span")
-        
-    def geom(self):
-        self.
+    
 
     def compute(self, inputs, outputs):
         sweep = inputs["sweep"]
