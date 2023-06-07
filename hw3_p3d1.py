@@ -68,7 +68,7 @@ indep_var_comp.add_output("v", val=63, units="m/s")
 indep_var_comp.add_output("alpha", val=5.0, units="deg")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3")
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
-indep_var_comp.add_output("sweep", 0, units="deg")
+indep_var_comp.add_output("sweep", 10, units="deg")
 indep_var_comp.add_output("span", 10, units="m")
 #indep_var_comp.add_output("sweep_times_span", 0, units="deg*m")
 
@@ -101,7 +101,7 @@ prob.model.connect("sweep", "wing.sweep")
 prob.model.connect("span", "wing.span")
 
 # Add the SweepTimesSpan constraint to the problem
-prob.model.add_constraint("sweep_times_span", lower=0, upper=12)
+prob.model.add_constraint("sweep_times_span", lower=0, upper=1)
 
 # Add the design variables, constraint, and objective to the problem
 prob.model.add_design_var("alpha", lower=-50.0, upper=50.0)

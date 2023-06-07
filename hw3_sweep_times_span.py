@@ -34,9 +34,9 @@ class SweepTimesSpan(om.ExplicitComponent):
     """
 
     def setup(self):
-        self.add_input("sweep", val=0.0, units="deg")
+        self.add_input("sweep", val=1.0, units="deg")
         self.add_input("span", val=0.0, units="m")
-        self.add_input("mesh")
+        #self.add_input("mesh")
         self.add_output("sweep_times_span", val=0.0, units="deg*m")
 
         self.declare_partials("sweep_times_span", "sweep")
@@ -47,11 +47,11 @@ class SweepTimesSpan(om.ExplicitComponent):
         sweep = inputs["sweep"]
         span = inputs["span"]
 
-        outputs["sweep_times_span"] = sweep * span
+        outputs["sweep_times_span"] = span/sweep  
 
     def compute_partials(self, inputs, partials):
         sweep = inputs["sweep"]
         span = inputs["span"]
 
-        partials["sweep_times_span", "sweep"] = span
-        partials["sweep_times_span", "span"] = sweep
+        partials["sweep_times_span", "sweep"] = -span/sweep**2
+        partials["sweep_times_span", "span"] = 1/sweep
