@@ -40,7 +40,7 @@ surface = {
     "span": 11.0,
     "root_chord": (16.2 / 11.0),
     "fem_model_type": "tube",
-    "sweep": 0,
+    "sweep": 10,
     "twist_cp": np.zeros(10),
     "mesh": mesh,
 
@@ -69,6 +69,8 @@ indep_var_comp.add_output("alpha", val=5.0, units="deg")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3")
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
 indep_var_comp.add_output("sweep", 0, units="deg")
+indep_var_comp.add_output("span", 10, units="m")
+#indep_var_comp.add_output("sweep_times_span", 0, units="deg*m")
 
 # Add the independent variable component to the problem model
 prob.model.add_subsystem("prob_vars", indep_var_comp, promotes=["*"])
@@ -81,23 +83,22 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 name = surface["name"]
-prob.model.add_subsystem(point_name, aero_group, promotes_inputs=["v", "alpha",
-                                                                  "rho", "cg"])
+prob.model.add_subsystem(point_name, aero_group, promotes_inputs=["v", "alpha", "rho", "cg"])
 
 # Connect the mesh from the geometry component to the analysis point
 prob.model.connect(name + ".mesh", point_name + "." + name + ".def_mesh")
 
 # Perform the connections with the modified names within the 'aero_states' group
 prob.model.connect(name + ".mesh", point_name + ".aero_states." + name + "_def_mesh")
-
+prob.model.connect(name + ".t_over_c", point_name + "." + name + "_perf." + "t_over_c")
 # Add the SweepTimesSpan constraint component to the problem model
 prob.model.add_subsystem("sweep_constraint", SweepTimesSpan(), promotes_inputs=["sweep", "span"], promotes_outputs=["sweep_times_span"])
 
 # Connect the necessary variables to the SweepTimesSpan component
 
 # prob.model.connect("wing.mesh", "sweep_constraint.mesh")
-prob.model.connect("wing.sweep", "sweep_constraint.sweep_times_span")
-# prob.model.connect("wing.span", "sweep_constraint.sweep_times_span")
+prob.model.connect("sweep", "wing.sweep")
+prob.model.connect("span", "wing.span")
 
 # Add the SweepTimesSpan constraint to the problem
 prob.model.add_constraint("sweep_times_span", lower=0, upper=12)
