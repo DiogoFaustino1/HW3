@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Assignment 3 - Problem 3 b) i) 
+Assignment 3 - Problem 3 b) iv) 
 
  ========================================================================
    Instituto Superior Técnico - Aircraft Optimal Design - 2023
@@ -22,8 +22,8 @@ from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
-mesh_dict = {"num_y" : 9, # spanwise
-             "num_x" : 3, # chordwise
+mesh_dict = {"num_y" : 101, # spanwise
+             "num_x" : 5, # chordwise
              "wing_type" : "rect",
              "symmetry" : True,  # computes left half-wing only
              "num_chord_cp" : 2,
@@ -47,8 +47,7 @@ surface = {
            "fem_model_type" : "tube",
            #"sweep" : 0,
            #"taper" : 1,
-           "chord_cp" : [1,1],
-           "twist_cp" : [1,1,1,1,1],
+           "twist_cp" : np.zeros(10),
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -62,9 +61,10 @@ surface = {
            # Airfoil properties for viscous drag calculation
            "k_lam" : 0.05,  # percentage of chord with laminar
                             # flow, used for viscous drag
-           "t_over_c_cp" : np.array([0.15]),  # thickness over chord ratio (NACA0015)
-           "c_max_t" : 0.303,  # chordwise location of maximum (NACA0015)
-                               # thickness
+           "t_over_c_cp" : np.array([0.12, 0.08, 0.06, 0.06, 0.05, 0.05, 0.04, 0.04, 0.03, 0.03]),
+                         # thickness over chord ratio (2412)
+           "c_max_t" : 0.3,  # chordwise location of maximum (NACA2412)
+                             # thickness
            "with_viscous" : True,  # if true, compute viscous drag
            "with_wave" : False,    # if true, compute wave drag
 }
