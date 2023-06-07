@@ -36,6 +36,7 @@ class SweepTimesSpan(om.ExplicitComponent):
     def setup(self):
         self.add_input("sweep", val=0.0, units="deg")
         self.add_input("span", val=0.0, units="m")
+        self.add_input("mesh")
         self.add_output("sweep_times_span", val=0.0, units="deg*m")
 
         self.declare_partials("sweep_times_span", "sweep")

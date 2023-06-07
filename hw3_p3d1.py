@@ -13,12 +13,12 @@ Assignment 3 - Problem 3 d) i)
  ========================================================================
 """
 
-import numpy as np
+import numpy        as np
 import openmdao.api as om
-from openaerostruct.geometry.utils import generate_mesh
-from openaerostruct.geometry.geometry_group import Geometry
+from openaerostruct.geometry.utils           import generate_mesh
+from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
-from hw3_sweep_times_span import SweepTimesSpan
+from hw3_sweep_times_span                    import SweepTimesSpan
 
 # Create a dictionary to store options about the mesh
 mesh_dict = {
@@ -68,6 +68,7 @@ indep_var_comp.add_output("v", val=63, units="m/s")
 indep_var_comp.add_output("alpha", val=5.0, units="deg")
 indep_var_comp.add_output("rho", val=1.00649, units="kg/m**3")
 indep_var_comp.add_output("cg", val=np.zeros((3)), units="m")
+indep_var_comp.add_output("sweep", 0, units="deg")
 
 # Add the independent variable component to the problem model
 prob.model.add_subsystem("prob_vars", indep_var_comp, promotes=["*"])
@@ -80,7 +81,8 @@ prob.model.add_subsystem(surface["name"], geom_group)
 aero_group = AeroPoint(surfaces=[surface])
 point_name = "aero_point_0"
 name = surface["name"]
-prob.model.add_subsystem(point_name, aero_group, promotes_inputs=["v", "alpha", "rho", "cg"])
+prob.model.add_subsystem(point_name, aero_group, promotes_inputs=["v", "alpha",
+                                                                  "rho", "cg"])
 
 # Connect the mesh from the geometry component to the analysis point
 prob.model.connect(name + ".mesh", point_name + "." + name + ".def_mesh")
@@ -93,9 +95,9 @@ prob.model.add_subsystem("sweep_constraint", SweepTimesSpan(), promotes_inputs=[
 
 # Connect the necessary variables to the SweepTimesSpan component
 
-#prob.model.connect("wing.mesh", "sweep_constraint.mesh")
-#prob.model.connect("wing.sweep", "sweep_constraint.sweep")
-#prob.model.connect("wing.span", "sweep_constraint.span")
+# prob.model.connect("wing.mesh", "sweep_constraint.mesh")
+prob.model.connect("wing.sweep", "sweep_constraint.sweep_times_span")
+# prob.model.connect("wing.span", "sweep_constraint.sweep_times_span")
 
 # Add the SweepTimesSpan constraint to the problem
 prob.model.add_constraint("sweep_times_span", lower=0, upper=12)
