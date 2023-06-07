@@ -48,6 +48,7 @@ surface = {
            #"sweep" : 0,
            #"taper" : 1,
            "twist_cp" : np.zeros(10),
+           "chord_cp" : np.ones(10),
            "mesh" : mesh,
            #"dor" : 0,
            # Aerodynamic performance of the lifting surface at

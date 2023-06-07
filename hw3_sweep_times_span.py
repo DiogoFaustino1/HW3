@@ -47,11 +47,11 @@ class SweepTimesSpan(om.ExplicitComponent):
         sweep = inputs["sweep"]
         span = inputs["span"]
 
-        outputs["sweep_times_span"] = span/sweep  
+        outputs["sweep_times_span"] = span**3/sweep  
 
     def compute_partials(self, inputs, partials):
         sweep = inputs["sweep"]
         span = inputs["span"]
 
-        partials["sweep_times_span", "sweep"] = -span/sweep**2
-        partials["sweep_times_span", "span"] = 1/sweep
+        partials["sweep_times_span", "sweep"] = -span**3/sweep**2
+        partials["sweep_times_span", "span"] = 3*span**2/sweep
