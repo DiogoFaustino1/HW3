@@ -22,12 +22,12 @@ from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
-# funciona com 11 e 2
-mesh_dict = {"num_y" : 101, # spanwise
+
+mesh_dict = {"num_y" : 21, # spanwise
              "num_x" : 5, # chordwise
              "wing_type" : "rect",
              "symmetry" : True,  # computes left half-wing only
-             "num_twist_cp" : 10
+             "num_twist_cp" : 5
              } 
 
 # Generate the aerodynamic mesh based on the previous dictionary
@@ -45,9 +45,7 @@ surface = {
            "span" : 11.0,
            "root_chord" : (16.2/11.0),
            "fem_model_type" : "tube",
-           #"sweep" : 0,
-           #"taper" : 1,
-           "twist_cp" : np.zeros(10),
+           "twist_cp" : np.zeros(5),
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -136,7 +134,6 @@ prob.setup()
 prob.run_driver()
 
 # Output some results
-# print("Twist Distrbution =", prob['wing.twist_cp'][0])
 print("alpha =", prob['aero_point_0.alpha'][0])
 print("C_D =", prob['aero_point_0.wing_perf.CD'][0])
 print("C_L =", prob['aero_point_0.wing_perf.CL'][0])

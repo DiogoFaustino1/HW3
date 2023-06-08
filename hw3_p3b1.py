@@ -23,9 +23,7 @@ from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
 
-# FUNCIONA COM Y=7 e X=2!!!
-
-mesh_dict = {"num_y" : 101, # spanwise
+mesh_dict = {"num_y" : 21, # spanwise
              "num_x" : 5, # chordwise
              "wing_type" : "rect",
              "symmetry" : True}  # computes left half-wing only
@@ -143,6 +141,3 @@ print("CM position =", prob['aero_point_0.CM'][1])
 
 # Clean up
 prob.cleanup()
-
-# grid convergence analysis, plot cd and cl for some values of cl and cd and check convergence
-# when results begin to be independent of mesh and number of panels

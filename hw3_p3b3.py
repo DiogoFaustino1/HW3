@@ -22,11 +22,11 @@ from openaerostruct.geometry.geometry_group  import Geometry
 from openaerostruct.aerodynamics.aero_groups import AeroPoint
 
 # Create a dictionary to store options about the mesh
-mesh_dict = {"num_y" : 101, # spanwise
-             "num_x" : 5, # chordwise
+mesh_dict = {"num_y" : 11, # spanwise
+             "num_x" : 3, # chordwise
              "wing_type" : "rect",
              "symmetry" : True,  # computes left half-wing only
-             "num_chord_cp" : 5
+             "num_chord_cp" : 1
              } 
 
 # Generate the aerodynamic mesh based on the previous dictionary
@@ -44,9 +44,7 @@ surface = {
            "span" : 11.0,
            "root_chord" : (16.2/11.0),
            "fem_model_type" : "tube",
-           #"sweep" : 0,
-           #"taper" : 1,
-           "twist_cp" : np.zeros(10),
+           "chord_cp" : 0.9*np.ones(3),
            "mesh" : mesh,
            
            # Aerodynamic performance of the lifting surface at
@@ -119,8 +117,8 @@ prob.driver.recording_options['record_derivatives'] = True
 prob.driver.recording_options['includes'] = ['*']
 
 # Setup problem and add design variables, constraint, and objective
-prob.model.add_design_var("wing.chord_cp", lower=-50.0, upper=50.0)
-prob.model.add_design_var("alpha", lower=-50.0, upper=50.0)
+prob.model.add_design_var("wing.chord_cp", lower=0, upper=20.0)
+prob.model.add_design_var("alpha", lower=-1.0, upper=50.0)
 prob.model.add_constraint(point_name + ".wing_perf.CL", equals=0.5)
 prob.model.add_objective(point_name + ".wing_perf.CD", scaler=1e4)
 
@@ -135,7 +133,6 @@ prob.setup()
 prob.run_driver()
 
 # Output some results
-# print("Twist Distrbution =", prob['wing.twist_cp'][0])
 print("alpha =", prob['aero_point_0.alpha'][0])
 print("C_D =", prob['aero_point_0.wing_perf.CD'][0])
 print("C_L =", prob['aero_point_0.wing_perf.CL'][0])
